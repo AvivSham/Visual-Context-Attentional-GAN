@@ -9,7 +9,7 @@ from src.models.generator import Decoder, Discriminator, gan_loss, sync_Discrimi
 import os
 from torch.utils.data import DataLoader
 from torch.nn import functional as F
-from src.data.vid_aud_grid import MultiDataset
+from src.data.vid_aud_grid import MultiDataset, LRS3Dataset
 from torch.nn import DataParallel as DP
 import torch.nn.parallel
 import time
@@ -25,6 +25,7 @@ import librosa
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--grid', default="Data_dir")
+    parser.add_argument('--mouth-crops-path', default=None)
     parser.add_argument("--checkpoint_dir", type=str, default='./data/checkpoints/GRID')
     parser.add_argument("--checkpoint", type=str, default=None)
     parser.add_argument("--batch_size", type=int, default=88)
@@ -58,14 +59,23 @@ def train_net(args):
     os.environ['OMP_NUM_THREADS'] = '2'
     os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
 
-    train_data = MultiDataset(
-        grid=args.grid,
-        subject=args.subject,
-        mode='train',
-        window_size=args.window_size,
-        max_v_timesteps=args.max_timesteps,
-        augmentations=args.augmentations,
-    )
+    if args.mouth_crops_path is None:
+        train_data = MultiDataset(
+            grid=args.grid,
+            subject=args.subject,
+            mode='train',
+            window_size=args.window_size,
+            max_v_timesteps=args.max_timesteps,
+            augmentations=args.augmentations,
+        )
+    else:
+        train_data = LRS3Dataset(
+            m_crops_path=args.m_crops_path,
+            mode="trainval",
+            window_size=args.window_size,
+            max_v_timesteps=args.max_timesteps,
+            augmentations=args.augmentations,
+        )
 
     v_front = Visual_front(in_channels=1)
     gen = Decoder()
