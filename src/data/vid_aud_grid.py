@@ -383,3 +383,12 @@ class LRS3Dataset(Dataset, AbstractDataset):
             return melspec, spec, vid, num_v_frames, audio.squeeze(0), num_a_frames, file_path
         else:
             return melspec, spec, vid, num_v_frames, audio.squeeze(0), num_a_frames
+
+
+if __name__ == '__main__':
+    dataset = LRS3Dataset(
+        "/dsi/gannot-lab/datasets2/LRS3/mouth_crops",
+        "trainval"
+    )
+    aaa = dataset[10]
+    print("Done!")
