@@ -343,19 +343,21 @@ class LRS3Dataset(Dataset, AbstractDataset):
 
     def __getitem__(self, idx):
         file_path = self.file_paths[idx]
+        ## Video Load ##
         vid = np.load(file_path)["data"]
-        audio = librosa.load(str(file_path).replace("mouth_crops", "audio_only")[:-3] + "wav")
+        vid = torch.FloatTensor(vid).unsqueeze(1)  # T C H W
+
+        ## Audio Load ##
+        audio = librosa.load(str(file_path).replace("mouth_crops", "audio_only")[:-3] + "wav", sr=16000)
         audio = torch.FloatTensor(audio).unsqueeze(0)
+
         info = dict(video_fps=25, audio_fps=16000)
 
         if vid.size(0) < 5 or audio.size(1) < 5:
             vid = torch.zeros([1, 112, 112, 3])
             audio = torch.zeros([1, 16000 // 25])
 
-        ## Video ##
-        vid = torch.FloatTensor(vid).unsqueeze(1)  # T C H W
-
-        ## Audio ##
+        ## Audio Norm##
         aud = audio / torch.abs(audio).max() * 0.9
         aud = torch.FloatTensor(self.preemphasize(aud.squeeze(0))).unsqueeze(0)
         aud = torch.clamp(aud, min=-1, max=1)
