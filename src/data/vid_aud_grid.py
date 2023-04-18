@@ -30,9 +30,9 @@ class AbstractDataset(ABC):
     def __init__(self, mode, max_v_timesteps=155, window_size=40, augmentations=False, num_mel_bins=80,
                  fast_validate=False):
         self.mode = mode
-        self.augmentations = augmentations if mode == 'train' else False
+        self.augmentations = augmentations if mode in ['train', 'trainval'] else False
         self.fast_validate = fast_validate
-        self.sample_window = True if mode == 'train' else False
+        self.sample_window = True if mode in ['train', 'trainval'] else False
         self.max_v_timesteps = window_size if self.sample_window else max_v_timesteps
         self.window_size = window_size
         self.num_mel_bins = num_mel_bins
