@@ -354,7 +354,7 @@ class LRS3Dataset(Dataset, AbstractDataset):
         info = dict(video_fps=25, audio_fps=16000)
 
         if vid.size(0) < 5 or audio.size(1) < 5:
-            vid = torch.zeros([1, 112, 112, 3])
+            vid = torch.zeros([1, 1, 112, 112])
             audio = torch.zeros([1, 16000 // 25])
 
         ## Audio Norm##
