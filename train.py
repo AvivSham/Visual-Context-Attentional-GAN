@@ -70,7 +70,7 @@ def train_net(args):
         )
     else:
         train_data = LRS3Dataset(
-            m_crops_path=args.m_crops_path,
+            m_crops_path=args.mouth_crops_path,
             mode="trainval",
             window_size=args.window_size,
             max_v_timesteps=args.max_timesteps,
